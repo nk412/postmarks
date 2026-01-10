@@ -486,11 +486,166 @@ function generateStickerBacking(colors) {
     <rect x="${borderWidth}" y="${borderWidth}" width="${260-borderWidth*2}" height="${150-borderWidth*2}" fill="#fafafa"/>`;
 }
 
+// Generate label-style SVG (postal label with handwritten text)
+function generateLabelSvg(options) {
+  const {
+    city = 'London',
+    country = 'United Kingdom',
+    palette = 0,
+    wear = 50,
+    rotation: customRotation = null,
+    viewBoxPadding = 10
+  } = options;
+
+  const selectedPalette = colorPalettes[palette] || colorPalettes[0];
+  const colors = selectedPalette.colors;
+  const primaryColor = colors[0];
+  const inkColor = colors[1] || '#3d2e1f';
+
+  const wearLevel = wear / 100;
+
+  // Deterministic random based on city name
+  const seed = city.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const rand = (n) => ((seed * (n + 1) * 9301 + 49297) % 233280) / 233280;
+
+  // Use custom rotation if provided, otherwise calculate from wear
+  const rotation = customRotation !== null ? customRotation : (wearLevel > 0 ? (rand(0) - 0.5) * 4 * wearLevel : 0);
+
+  // Location text - always use city and country (no native script for label style)
+  const locationText = `${city}, ${country}`;
+
+  // Adjust font size based on text length
+  const fontSize = locationText.length > 20 ? 32 : locationText.length > 14 ? 38 : 42;
+
+  // Generate wear effects for label
+  const wearEffects = wearLevel > 0 ? generateLabelWearEffects(wearLevel, rand) : [];
+  const wearMarkup = wearEffects.length > 0 ? wearEffects.join('\n    ') : '';
+  const wearFilters = wearLevel > 0 ? `
+    <filter id="blur-subtle" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.8"/>
+    </filter>` : '';
+
+  const baseWidth = 300;
+  const baseHeight = 90;
+
+  // Calculate padding for rotation - label is wide so needs more vertical padding when rotated
+  const hasRotation = Math.abs(rotation) > 0.01;
+  const rotationRad = Math.abs(rotation) * Math.PI / 180;
+  // When rotated, the bounding box grows based on sin/cos of rotation angle
+  const rotatedHeight = baseWidth * Math.sin(rotationRad) + baseHeight * Math.cos(rotationRad);
+  const rotatedWidth = baseWidth * Math.cos(rotationRad) + baseHeight * Math.sin(rotationRad);
+  const neededPaddingX = Math.ceil((rotatedWidth - baseWidth) / 2) + 15;
+  const neededPaddingY = Math.ceil((rotatedHeight - baseHeight) / 2) + 15;
+
+  const paddingX = hasRotation ? neededPaddingX : 15;
+  const paddingY = hasRotation ? neededPaddingY : 15;
+  const vbX = -paddingX;
+  const vbY = -paddingY;
+  const vbW = baseWidth + paddingX * 2;
+  const vbH = baseHeight + paddingY * 2;
+
+  // Slightly randomize the paper edge path based on city
+  const edgeVar = (i) => (rand(i + 500) - 0.5) * 4;
+
+  return `<svg width="${vbW}" height="${vbH}" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Reenie+Beanie&amp;display=swap');
+    </style>
+    <filter id="label-shadow" x="-5%" y="-5%" width="115%" height="125%">
+      <feDropShadow dx="1" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>${wearFilters}
+  </defs>
+
+  <g transform="rotate(${rotation.toFixed(2)} ${baseWidth/2} ${baseHeight/2})" filter="url(#label-shadow)">
+    <!-- Aged paper with slightly irregular edges -->
+    <path d="M ${3 + edgeVar(0)} ${6 + edgeVar(1)}
+             Q ${8 + edgeVar(2)} ${1 + edgeVar(3)} ${15 + edgeVar(4)} ${5 + edgeVar(5)}
+             L ${145 + edgeVar(6)} ${2 + edgeVar(7)}
+             Q ${150 + edgeVar(8)} ${0 + edgeVar(9)} ${155 + edgeVar(10)} ${3 + edgeVar(11)}
+             L ${285 + edgeVar(12)} ${1 + edgeVar(13)}
+             Q ${292 + edgeVar(14)} ${0 + edgeVar(15)} ${298 + edgeVar(16)} ${5 + edgeVar(17)}
+             L ${300 + edgeVar(18)} ${82 + edgeVar(19)}
+             Q ${297 + edgeVar(20)} ${90 + edgeVar(21)} ${290 + edgeVar(22)} ${87 + edgeVar(23)}
+             L ${155 + edgeVar(24)} ${91 + edgeVar(25)}
+             Q ${148 + edgeVar(26)} ${94 + edgeVar(27)} ${142 + edgeVar(28)} ${90 + edgeVar(29)}
+             L ${12 + edgeVar(30)} ${92 + edgeVar(31)}
+             Q ${4 + edgeVar(32)} ${95 + edgeVar(33)} ${1 + edgeVar(34)} ${88 + edgeVar(35)}
+             Z"
+          fill="#f5f0e1"/>
+
+    <!-- Typed label -->
+    <text x="22" y="32" font-family="'Courier New', monospace" font-size="11" fill="${primaryColor}" letter-spacing="2">SENT FROM</text>
+
+    <!-- Handwritten location -->
+    <text x="22" y="70"
+          font-family="'Reenie Beanie', cursive"
+          font-size="${fontSize}"
+          fill="${inkColor}"
+          transform="rotate(${(-1 + rand(100) * 2).toFixed(1)}, 22, 70)">${escapeHtml(locationText)}</text>
+
+    ${wearMarkup}
+  </g>
+</svg>`;
+}
+
+// Generate label-specific wear effects
+function generateLabelWearEffects(wearLevel, rand) {
+  const effects = [];
+
+  // Paper stains/foxing
+  if (wearLevel > 0.15) {
+    const numSpots = Math.floor(wearLevel * 12) + 2;
+    for (let i = 0; i < numSpots; i++) {
+      const x = rand(i * 4 + 200) * 280 + 10;
+      const y = rand(i * 4 + 201) * 70 + 10;
+      const size = rand(i * 4 + 202) * 3 * wearLevel + 0.5;
+      const opacity = rand(i * 4 + 203) * 0.1 * wearLevel + 0.02;
+      const r = Math.floor(130 + rand(i * 4 + 204) * 40);
+      const g = Math.floor(100 + rand(i * 4 + 205) * 30);
+      const b = Math.floor(60 + rand(i * 4 + 206) * 20);
+      effects.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(1)}" fill="rgba(${r},${g},${b},${opacity.toFixed(3)})"/>`);
+    }
+  }
+
+  // Fade patches
+  if (wearLevel > 0.2) {
+    const numPatches = Math.floor(wearLevel * 4) + 1;
+    for (let i = 0; i < numPatches; i++) {
+      const x = rand(i * 3 + 300) * 260 + 20;
+      const y = rand(i * 3 + 301) * 60 + 15;
+      const rx = rand(i * 3 + 302) * 20 * wearLevel + 8;
+      const ry = rx * (0.4 + rand(i * 3 + 303) * 0.3);
+      const opacity = (rand(i * 7 + 304) * 0.1 + 0.03) * wearLevel;
+      effects.push(`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="rgba(245,240,225,${opacity.toFixed(3)})" filter="url(#blur-subtle)"/>`);
+    }
+  }
+
+  // Edge wear/tears
+  if (wearLevel > 0.4) {
+    const numTears = Math.floor(wearLevel * 6) + 1;
+    for (let i = 0; i < numTears; i++) {
+      const onEdge = Math.floor(rand(i * 5 + 400) * 4);
+      let x, y;
+      if (onEdge === 0) { x = rand(i * 5 + 401) * 280 + 10; y = rand(i * 5 + 402) * 6; }
+      else if (onEdge === 1) { x = rand(i * 5 + 401) * 280 + 10; y = 84 + rand(i * 5 + 402) * 6; }
+      else if (onEdge === 2) { x = rand(i * 5 + 402) * 6; y = rand(i * 5 + 401) * 70 + 10; }
+      else { x = 294 + rand(i * 5 + 402) * 6; y = rand(i * 5 + 401) * 70 + 10; }
+
+      const size = rand(i * 5 + 403) * 4 * wearLevel + 1;
+      const opacity = rand(i * 5 + 404) * 0.3 + 0.2;
+      effects.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(1)}" fill="rgba(245,240,225,${opacity.toFixed(3)})"/>`);
+    }
+  }
+
+  return effects;
+}
+
 // Generate envelope-style SVG (airmail design)
 function generateEnvelopeSvg(options) {
   const {
-    city = 'City',
-    country = 'Country',
+    city = 'London',
+    country = 'United Kingdom',
     native = '',
     symbol = 'compass',
     palette = 0,
@@ -738,8 +893,8 @@ function generateEnvelopeWearEffects(wearLevel, rand) {
 
 export function generatePostmark(options) {
   const {
-    city = 'City',
-    country = 'Country',
+    city = 'London',
+    country = 'United Kingdom',
     native = '',
     symbol = 'compass',
     palette = 0,
@@ -750,9 +905,12 @@ export function generatePostmark(options) {
     viewBoxPadding = 10
   } = options;
 
-  // Dispatch to envelope style if requested
+  // Dispatch to other styles if requested
   if (style === 'envelope') {
     return generateEnvelopeSvg(options);
+  }
+  if (style === 'label') {
+    return generateLabelSvg(options);
   }
 
   const selectedPalette = colorPalettes[palette] || colorPalettes[0];

@@ -348,6 +348,33 @@
       accent-color: #1a1a1a;
     }
 
+    .style-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .style-toggle-btn {
+      flex: 1;
+      font-family: Georgia, serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .style-toggle-btn:hover {
+      border-color: #888;
+    }
+
+    .style-toggle-btn.selected {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+
     .about-btn {
       font-family: Georgia, serif;
       font-size: 14px;
@@ -474,6 +501,7 @@
       <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="16">Marrakech</button>
       <button class="example-btn" data-city="Lisbon" data-country="Portugal" data-native="Lisboa" data-symbol="wave" data-palette="12">Lisbon</button>
       <button class="example-btn" data-city="Santorini" data-country="Greece" data-native="Σαντορίνη" data-symbol="sun" data-palette="8">Santorini</button>
+      <button class="example-btn" data-city="Amman" data-country="Jordan" data-native="عمّان" data-symbol="star" data-palette="7">Amman</button>
     </div>
 
     <div class="generator">
@@ -505,10 +533,11 @@
       </div>
 
       <div class="preview-section">
-        <label class="checkbox-field">
-          <input type="checkbox" id="envelope-checkbox">
-          <span>Envelope style</span>
-        </label>
+        <div class="style-toggle">
+          <button class="style-toggle-btn selected" data-style="postmark">Postmark</button>
+          <button class="style-toggle-btn" data-style="envelope">Envelope</button>
+          <button class="style-toggle-btn" data-style="label">Label</button>
+        </div>
         <div class="preview-box">
           <div id="preview-svg"></div>
         </div>
@@ -610,8 +639,8 @@
 
     // Generate postmark SVG using shared module
     function generatePostmarkSvg() {
-      const city = document.getElementById('city-input').value || 'City';
-      const country = document.getElementById('country-input').value || 'Country';
+      const city = document.getElementById('city-input').value || 'London';
+      const country = document.getElementById('country-input').value || 'United Kingdom';
       const native = document.getElementById('native-input').value;
 
       // Find palette index
@@ -640,8 +669,8 @@
 
     // Generate worker URL with current settings
     function generateWorkerUrl() {
-      const city = document.getElementById('city-input').value || 'City';
-      const country = document.getElementById('country-input').value || 'Country';
+      const city = document.getElementById('city-input').value || 'London';
+      const country = document.getElementById('country-input').value || 'United Kingdom';
       const native = document.getElementById('native-input').value;
       const paletteIndex = colorPalettes.findIndex(p => p.name === selectedPalette.name);
 
@@ -749,12 +778,19 @@
         updatePreview();
       });
 
-      // Envelope style checkbox
-      document.getElementById('envelope-checkbox').addEventListener('change', (e) => {
-        selectedStyle = e.target.checked ? 'envelope' : 'postmark';
-        // Hide sticker option for envelope style (not supported)
-        stickerField.style.display = selectedStyle === 'envelope' ? 'none' : 'flex';
-        updatePreview();
+      // Style toggle buttons
+      const symbolField = document.querySelector('#symbol-grid').closest('.field');
+      document.querySelectorAll('.style-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.style-toggle-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedStyle = btn.dataset.style;
+          // Hide sticker option for non-postmark styles
+          stickerField.style.display = selectedStyle === 'postmark' ? 'flex' : 'none';
+          // Hide symbol option for label style (no icon)
+          symbolField.style.display = selectedStyle === 'label' ? 'none' : 'block';
+          updatePreview();
+        });
       });
 
       // Copy button

@@ -25,11 +25,11 @@ export default {
     const rotation = Math.max(-30, Math.min(30, parseInt(params.get('rotation') || '0', 10)));
 
     const style = params.get('style') || 'postmark';
-    const validStyles = ['postmark', 'envelope'];
+    const validStyles = ['postmark', 'envelope', 'label'];
 
     const options = {
-      city: params.get('city') || 'City',
-      country: params.get('country') || 'Country',
+      city: params.get('city') || 'London',
+      country: params.get('country') || 'United Kingdom',
       native: params.get('native') || '',
       symbol: params.get('symbol') || 'compass',
       palette: parseInt(params.get('palette') || '0', 10),
