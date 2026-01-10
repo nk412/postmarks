@@ -1082,12 +1082,12 @@ export function generatePostmark(options) {
       <!-- Bottom stripes -->
       ${generateStripes(colors, false)}
 
+      <!-- Icon -->
+      ${iconSvg}
       <!-- Content -->
       <text x="130" y="42" text-anchor="middle" font-family="Georgia, serif" font-size="10" letter-spacing="3" fill="#888">A DISPATCH FROM</text>
       <text x="130" y="${cityY}" text-anchor="middle" font-family="Georgia, serif" font-size="${cityFontSize}" font-weight="bold" fill="#1a1a1a">${escapeHtml(city)}</text>
       <text x="130" y="${subtitleY}" text-anchor="middle" font-family="Georgia, serif" font-size="${subtitleFontSize}" fill="#666">${escapeHtml(subtitle)}</text>
-      <!-- Icon -->
-      ${iconSvg}
       ${wearMarkup}
     </g>
   </svg>`;
