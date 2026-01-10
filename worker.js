@@ -20,14 +20,20 @@ export default {
 
     // Parse query parameters
     const params = url.searchParams;
+    // Parse and validate parameters
+    const wear = Math.max(0, Math.min(100, parseInt(params.get('wear') || '50', 10)));
+    const rotation = Math.max(-30, Math.min(30, parseInt(params.get('rotation') || '0', 10)));
+
     const options = {
       city: params.get('city') || 'City',
       country: params.get('country') || 'Country',
       native: params.get('native') || '',
       symbol: params.get('symbol') || 'compass',
       palette: parseInt(params.get('palette') || '0', 10),
-      wear: parseInt(params.get('wear') || '50', 10),
+      wear: wear,
       sticker: params.get('sticker') === 'true' || params.get('sticker') === '1',
+      rotation: rotation,
+      viewBoxPadding: 95  // Extra padding for rotation to prevent clipping
     };
 
     // Generate SVG

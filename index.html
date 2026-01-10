@@ -395,6 +395,73 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
       text-align: center;
     }
+
+    .url-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+
+    .url-field {
+      display: flex;
+      gap: 8px;
+    }
+
+    .url-input {
+      flex: 1;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .url-input:focus {
+      outline: none;
+      border-color: #888;
+    }
+
+    .copy-btn {
+      font-family: Georgia, serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+
+    .copy-btn.copied {
+      background: #4caf50;
+      color: #fff;
+      border-color: #4caf50;
+    }
+
+    .url-label {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -454,6 +521,22 @@
           <input type="checkbox" id="sticker-checkbox">
           <span>Show sticker border</span>
         </label>
+        <div class="url-section">
+          <div>
+            <div class="url-label">Worker URL</div>
+            <div class="url-field">
+              <input type="text" class="url-input" id="worker-url" readonly>
+              <button class="copy-btn" id="copy-url-btn">Copy</button>
+            </div>
+          </div>
+          <div>
+            <div class="url-label">Markdown Embed</div>
+            <div class="url-field">
+              <input type="text" class="url-input" id="markdown-url" readonly>
+              <button class="copy-btn" id="copy-markdown-btn">Copy</button>
+            </div>
+          </div>
+        </div>
         <button class="download-btn" id="download-btn">Download SVG</button>
       </div>
     </div>
@@ -466,6 +549,9 @@
     window.icons = icons;
     window.iconPreviews = iconPreviews;
     window.colorPalettes = colorPalettes;
+
+    // Worker URL configuration - update this with your deployed worker URL
+    const WORKER_URL = 'https://postmarks.your-username.workers.dev';
 
     // State
     let selectedSymbol = 'compass';
@@ -553,6 +639,54 @@
     function updatePreview() {
       const svg = generatePostmarkSvg();
       document.getElementById('preview-svg').innerHTML = svg;
+      updateWorkerUrl();
+    }
+
+    // Generate worker URL with current settings
+    function generateWorkerUrl() {
+      const city = document.getElementById('city-input').value || 'City';
+      const country = document.getElementById('country-input').value || 'Country';
+      const native = document.getElementById('native-input').value;
+      const paletteIndex = colorPalettes.findIndex(p => p.name === selectedPalette.name);
+
+      const params = new URLSearchParams();
+      params.set('city', city);
+      params.set('country', country);
+      if (native) params.set('native', native);
+      params.set('symbol', selectedSymbol);
+      params.set('palette', paletteIndex >= 0 ? paletteIndex : 0);
+      params.set('wear', wearLevel);
+      if (showStamp) params.set('sticker', '1');
+      if (rotationDegrees !== 0) params.set('rotation', rotationDegrees);
+
+      return `${WORKER_URL}?${params.toString()}`;
+    }
+
+    // Update worker URL display
+    function updateWorkerUrl() {
+      const workerUrl = generateWorkerUrl();
+      const city = document.getElementById('city-input').value || 'postmark';
+      const altText = city;
+      const markdownSyntax = `![${altText}](${workerUrl})`;
+
+      document.getElementById('worker-url').value = workerUrl;
+      document.getElementById('markdown-url').value = markdownSyntax;
+    }
+
+    // Copy to clipboard with feedback
+    async function copyToClipboard(text, button) {
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
     }
 
     // Download SVG
@@ -620,6 +754,17 @@
       document.getElementById('sticker-checkbox').addEventListener('change', (e) => {
         showStamp = e.target.checked;
         updatePreview();
+      });
+
+      // Copy buttons
+      document.getElementById('copy-url-btn').addEventListener('click', () => {
+        const url = document.getElementById('worker-url').value;
+        copyToClipboard(url, document.getElementById('copy-url-btn'));
+      });
+
+      document.getElementById('copy-markdown-btn').addEventListener('click', () => {
+        const markdown = document.getElementById('markdown-url').value;
+        copyToClipboard(markdown, document.getElementById('copy-markdown-btn'));
       });
 
       // About modal
