@@ -24,6 +24,9 @@ export default {
     const wear = Math.max(0, Math.min(100, parseInt(params.get('wear') || '50', 10)));
     const rotation = Math.max(-30, Math.min(30, parseInt(params.get('rotation') || '0', 10)));
 
+    const style = params.get('style') || 'postmark';
+    const validStyles = ['postmark', 'envelope'];
+
     const options = {
       city: params.get('city') || 'City',
       country: params.get('country') || 'Country',
@@ -32,6 +35,7 @@ export default {
       palette: parseInt(params.get('palette') || '0', 10),
       wear: wear,
       sticker: params.get('sticker') === 'true' || params.get('sticker') === '1',
+      style: validStyles.includes(style) ? style : 'postmark',
       rotation: rotation,
       viewBoxPadding: 80  // Smart padding: enough for 30° rotation without excessive whitespace
     };

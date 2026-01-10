@@ -505,6 +505,10 @@
       </div>
 
       <div class="preview-section">
+        <label class="checkbox-field">
+          <input type="checkbox" id="envelope-checkbox">
+          <span>Envelope style</span>
+        </label>
         <div class="preview-box">
           <div id="preview-svg"></div>
         </div>
@@ -549,6 +553,7 @@
     let wearLevel = 50;
     let rotationDegrees = 0;
     let showStamp = false;
+    let selectedStyle = 'postmark';
 
     // Initialize symbol grid
     function initSymbolGrid() {
@@ -620,6 +625,7 @@
         palette: paletteIndex >= 0 ? paletteIndex : 0,
         wear: wearLevel,
         sticker: showStamp,
+        style: selectedStyle,
         rotation: rotationDegrees,
         viewBoxPadding: 80  // Smart padding: enough for 30° rotation without excessive whitespace
       });
@@ -646,7 +652,8 @@
       params.set('symbol', selectedSymbol);
       params.set('palette', paletteIndex >= 0 ? paletteIndex : 0);
       params.set('wear', wearLevel);
-      if (showStamp) params.set('sticker', '1');
+      if (showStamp && selectedStyle === 'postmark') params.set('sticker', '1');
+      if (selectedStyle !== 'postmark') params.set('style', selectedStyle);
       if (rotationDegrees !== 0) params.set('rotation', rotationDegrees);
 
       return `${WORKER_URL}?${params.toString()}`;
@@ -736,8 +743,17 @@
       });
 
       // Sticker checkbox
+      const stickerField = document.getElementById('sticker-checkbox').closest('.checkbox-field');
       document.getElementById('sticker-checkbox').addEventListener('change', (e) => {
         showStamp = e.target.checked;
+        updatePreview();
+      });
+
+      // Envelope style checkbox
+      document.getElementById('envelope-checkbox').addEventListener('change', (e) => {
+        selectedStyle = e.target.checked ? 'envelope' : 'postmark';
+        // Hide sticker option for envelope style (not supported)
+        stickerField.style.display = selectedStyle === 'envelope' ? 'none' : 'flex';
         updatePreview();
       });
 
