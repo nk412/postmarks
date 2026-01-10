@@ -527,12 +527,21 @@ export function generatePostmark(options) {
 
   const stickerMarkup = sticker ? generateStickerBacking(colors) : '';
 
-  const vbX = -viewBoxPadding;
-  const vbY = -viewBoxPadding;
-  const vbW = 260 + viewBoxPadding * 2;
-  const vbH = 150 + viewBoxPadding * 2;
+  // Calculate padding needed for rotation (max 30° rotation needs different x/y padding)
+  // For a 260x150 rect rotated 30° around center: needs ~30 horizontal, ~65 vertical padding
+  // Only use extra padding when there's actual rotation
+  const hasRotation = Math.abs(rotation) > 0.01;
+  const paddingX = typeof viewBoxPadding === 'object' ? viewBoxPadding.x :
+                   (viewBoxPadding > 50 && hasRotation ? 30 : (hasRotation ? viewBoxPadding : 10));
+  const paddingY = typeof viewBoxPadding === 'object' ? viewBoxPadding.y :
+                   (viewBoxPadding > 50 && hasRotation ? 65 : (hasRotation ? viewBoxPadding : 10));
 
-  return `<svg width="${vbW + 20}" height="${vbH + 20}" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  const vbX = -paddingX;
+  const vbY = -paddingY;
+  const vbW = 260 + paddingX * 2;
+  const vbH = 150 + paddingY * 2;
+
+  return `<svg width="${vbW}" height="${vbH}" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>${wearFilters}</defs>
     <g transform="rotate(${rotation.toFixed(2)} 130 75)">
     ${stickerMarkup}

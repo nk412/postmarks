@@ -414,13 +414,12 @@
     .url-input {
       flex: 1;
       font-family: 'Courier New', monospace;
-      font-size: 11px;
+      font-size: 9px;
       padding: 8px 10px;
       border: 1px solid #ddd;
       background: #fff;
       color: #333;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-x: auto;
       white-space: nowrap;
     }
 
@@ -522,19 +521,10 @@
           <span>Show sticker border</span>
         </label>
         <div class="url-section">
-          <div>
-            <div class="url-label">Worker URL</div>
-            <div class="url-field">
-              <input type="text" class="url-input" id="worker-url" readonly>
-              <button class="copy-btn" id="copy-url-btn">Copy</button>
-            </div>
-          </div>
-          <div>
-            <div class="url-label">Markdown Embed</div>
-            <div class="url-field">
-              <input type="text" class="url-input" id="markdown-url" readonly>
-              <button class="copy-btn" id="copy-markdown-btn">Copy</button>
-            </div>
+          <div class="url-label">SVG URL</div>
+          <div class="url-field">
+            <input type="text" class="url-input" id="svg-url" readonly>
+            <button class="copy-btn" id="copy-url-btn">Copy</button>
           </div>
         </div>
         <button class="download-btn" id="download-btn">Download SVG</button>
@@ -551,7 +541,7 @@
     window.colorPalettes = colorPalettes;
 
     // Worker URL configuration - update this with your deployed worker URL
-    const WORKER_URL = 'https://postmarks.your-username.workers.dev';
+    const WORKER_URL = 'https://postmarks.nk412.workers.dev';
 
     // State
     let selectedSymbol = 'compass';
@@ -631,7 +621,7 @@
         wear: wearLevel,
         sticker: showStamp,
         rotation: rotationDegrees,
-        viewBoxPadding: 95  // Extra padding for rotation in preview
+        viewBoxPadding: 80  // Smart padding: enough for 30° rotation without excessive whitespace
       });
     }
 
@@ -665,12 +655,7 @@
     // Update worker URL display
     function updateWorkerUrl() {
       const workerUrl = generateWorkerUrl();
-      const city = document.getElementById('city-input').value || 'postmark';
-      const altText = city;
-      const markdownSyntax = `![${altText}](${workerUrl})`;
-
-      document.getElementById('worker-url').value = workerUrl;
-      document.getElementById('markdown-url').value = markdownSyntax;
+      document.getElementById('svg-url').value = workerUrl;
     }
 
     // Copy to clipboard with feedback
@@ -756,15 +741,10 @@
         updatePreview();
       });
 
-      // Copy buttons
+      // Copy button
       document.getElementById('copy-url-btn').addEventListener('click', () => {
-        const url = document.getElementById('worker-url').value;
+        const url = document.getElementById('svg-url').value;
         copyToClipboard(url, document.getElementById('copy-url-btn'));
-      });
-
-      document.getElementById('copy-markdown-btn').addEventListener('click', () => {
-        const markdown = document.getElementById('markdown-url').value;
-        copyToClipboard(markdown, document.getElementById('copy-markdown-btn'));
       });
 
       // About modal

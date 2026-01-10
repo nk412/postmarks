@@ -33,7 +33,7 @@ export default {
       wear: wear,
       sticker: params.get('sticker') === 'true' || params.get('sticker') === '1',
       rotation: rotation,
-      viewBoxPadding: 95  // Extra padding for rotation to prevent clipping
+      viewBoxPadding: 80  // Smart padding: enough for 30° rotation without excessive whitespace
     };
 
     // Generate SVG
