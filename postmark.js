@@ -488,7 +488,7 @@ function generateStickerBacking(colors) {
 
 export function generatePostmark(options) {
   const {
-    city = 'Your City',
+    city = 'City',
     country = 'Country',
     native = '',
     symbol = 'compass',
