@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Postmark Generator</title>
+  <title>Postmarks</title>
   <style>
     * {
       box-sizing: border-box;
@@ -329,20 +329,84 @@
     .wear-field {
       margin-top: 8px;
     }
+
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .checkbox-field input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #1a1a1a;
+    }
+
+    .about-btn {
+      font-family: Georgia, serif;
+      font-size: 14px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #888;
+      cursor: pointer;
+      vertical-align: middle;
+      margin-left: 8px;
+      transition: all 0.2s;
+    }
+
+    .about-btn:hover {
+      border-color: #888;
+      color: #333;
+    }
+
+    .about-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-overlay.visible {
+      display: flex;
+    }
+
+    .about-modal {
+      background: #fff;
+      padding: 24px 28px;
+      max-width: 340px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>POSTMARK GENERATOR</h1>
+    <h1>POSTMARKS <button class="about-btn" id="about-btn">?</button></h1>
 
     <div class="examples">
       <span class="examples-label">Examples:</span>
       <button class="example-btn" data-city="Tokyo" data-country="Japan" data-native="東京" data-symbol="sun" data-palette="0">Tokyo</button>
       <button class="example-btn" data-city="Stockholm" data-country="Sweden" data-native="Sverige" data-symbol="anchor" data-palette="3">Stockholm</button>
-      <button class="example-btn" data-city="Reykjavik" data-country="Iceland" data-native="Ísland" data-symbol="moon" data-palette="6">Reykjavik</button>
-      <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="7">Marrakech</button>
-      <button class="example-btn" data-city="Ushuaia" data-country="Argentina" data-native="Fin del Mundo" data-symbol="compass" data-palette="8">Ushuaia</button>
-      <button class="example-btn" data-city="Kathmandu" data-country="Nepal" data-native="काठमाडौं" data-symbol="mountain" data-palette="2">Kathmandu</button>
+      <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="16">Marrakech</button>
+      <button class="example-btn" data-city="Lisbon" data-country="Portugal" data-native="Lisboa" data-symbol="wave" data-palette="12">Lisbon</button>
+      <button class="example-btn" data-city="Santorini" data-country="Greece" data-native="Σαντορίνη" data-symbol="sun" data-palette="8">Santorini</button>
     </div>
 
     <div class="generator">
@@ -381,6 +445,10 @@
           <label>Wear & Tear: <span id="wear-value">Medium</span></label>
           <input type="range" id="wear-slider" min="0" max="100" value="50">
         </div>
+        <label class="checkbox-field">
+          <input type="checkbox" id="sticker-checkbox">
+          <span>Show sticker border</span>
+        </label>
         <button class="download-btn" id="download-btn">Download SVG</button>
       </div>
     </div>
@@ -488,13 +556,26 @@
       { name: 'Ocean', colors: ['#0077B6', '#023E8A'] },
       { name: 'Sunset', colors: ['#C44536', '#772E25'] },
       { name: 'Olive', colors: ['#606C38', '#283618'] },
-      { name: 'Ink', colors: ['#1a1a1a', '#4a4a4a'] }
+      { name: 'Ink', colors: ['#1a1a1a', '#4a4a4a'] },
+      { name: 'Teal', colors: ['#2A9D8F', '#264653'] },
+      { name: 'Lavender', colors: ['#7C5295', '#4A3660'] },
+      { name: 'Mustard', colors: ['#D4A03C', '#8B6914'] },
+      { name: 'Rose', colors: ['#C4707A', '#8B4D57'] },
+      { name: 'Copper', colors: ['#B87333', '#6B4423'] },
+      { name: 'Sage', colors: ['#87A878', '#4A5D42'] },
+      { name: 'Plum', colors: ['#8E4585', '#4A2545'] },
+      { name: 'Sand', colors: ['#C2A878', '#8B7355'] },
+      { name: 'Nordic', colors: ['#5B8FA8', '#2D4A5E'] },
+      { name: 'Postal', colors: ['#3D6B59', '#1D3D2D'] },
+      { name: 'Rust', colors: ['#B7472A', '#6B2A1A'] },
+      { name: 'Midnight', colors: ['#3D3B8E', '#1A1B3D'] }
     ];
 
     // State
     let selectedSymbol = 'compass';
     let selectedPalette = colorPalettes[0];
     let wearLevel = 50;
+    let showStamp = false;
 
     // Initialize symbol grid
     function initSymbolGrid() {
@@ -547,6 +628,42 @@
         wrapper.appendChild(label);
         grid.appendChild(wrapper);
       });
+    }
+
+    // Generate sticker backing with airmail border
+    function generateStickerBacking(colors) {
+      const borderWidth = 12;
+
+      // Classic airmail: red, white, blue, white parallelograms
+      let borderStripes = '';
+      const stripeWidth = 8;
+      const numStripes = 60;
+      const pattern = [colors[0], '#ffffff', colors[1] || '#1a1a1a', '#ffffff'];
+
+      for (let i = 0; i < numStripes; i++) {
+        const x = -80 + i * stripeWidth;
+        const color = pattern[i % 4];
+        borderStripes += `<rect x="${x}" y="-20" width="${stripeWidth}" height="250" fill="${color}" transform="skewX(-45)"/>`;
+      }
+
+      return `
+    <!-- Sticker backing -->
+    <defs>
+      <clipPath id="border-clip">
+        <path d="M0,0 H260 V150 H0 Z M${borderWidth},${borderWidth} V${150-borderWidth} H${260-borderWidth} V${borderWidth} Z" clip-rule="evenodd"/>
+      </clipPath>
+    </defs>
+
+    <!-- White sticker background -->
+    <rect x="0" y="0" width="260" height="150" fill="#fff"/>
+
+    <!-- Airmail striped border -->
+    <g clip-path="url(#border-clip)">
+      ${borderStripes}
+    </g>
+
+    <!-- Inner white area -->
+    <rect x="${borderWidth}" y="${borderWidth}" width="${260-borderWidth*2}" height="${150-borderWidth*2}" fill="#fafafa"/>`;
     }
 
     // Generate stripes
@@ -642,14 +759,88 @@
 
       // Dust specks
       const dustSpecks = [];
-      if (wear > 0.4) {
-        const numSpecks = Math.floor(wear * 25);
+      if (wear > 0.3) {
+        const numSpecks = Math.floor(wear * 40);
         for (let i = 0; i < numSpecks; i++) {
           const x = rand(i * 2 + 200) * 260;
           const y = rand(i * 2 + 201) * 150;
-          const r = rand(i * 2 + 202) * 2 * wear + 0.5;
-          const opacity = rand(i * 2 + 203) * 0.3 * wear;
-          dustSpecks.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="rgba(100,80,60,${opacity.toFixed(2)})"/>`);
+          const r = rand(i * 2 + 202) * 2.5 * wear + 0.5;
+          const opacity = rand(i * 2 + 203) * 0.4 * wear;
+          dustSpecks.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="rgba(80,60,40,${opacity.toFixed(2)})"/>`);
+        }
+      }
+
+      // Fold/crease lines
+      const creases = [];
+      if (wear > 0.5) {
+        const numCreases = Math.floor((wear - 0.5) * 6);
+        for (let i = 0; i < numCreases; i++) {
+          const vertical = rand(i * 7 + 300) > 0.5;
+          const x1 = vertical ? rand(i * 7 + 301) * 200 + 30 : 0;
+          const y1 = vertical ? 0 : rand(i * 7 + 302) * 100 + 25;
+          const x2 = vertical ? x1 + (rand(i * 7 + 303) - 0.5) * 20 : 260;
+          const y2 = vertical ? 150 : y1 + (rand(i * 7 + 304) - 0.5) * 20;
+          const opacity = rand(i * 7 + 305) * 0.12 * wear + 0.03;
+          creases.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(0,0,0,${opacity.toFixed(2)})" stroke-width="${(rand(i*7+306) * 1.5 + 0.5).toFixed(1)}"/>`);
+        }
+      }
+
+      // Water stains / coffee rings
+      const stains = [];
+      if (wear > 0.6) {
+        const numStains = Math.floor((wear - 0.6) * 5);
+        for (let i = 0; i < numStains; i++) {
+          const x = rand(i * 8 + 400) * 220 + 20;
+          const y = rand(i * 8 + 401) * 110 + 20;
+          const r = rand(i * 8 + 402) * 25 * wear + 15;
+          const opacity = rand(i * 8 + 403) * 0.08 * wear + 0.02;
+          stains.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="rgba(139,90,43,${opacity.toFixed(2)})" stroke-width="${(rand(i*8+404) * 4 + 2).toFixed(1)}"/>`);
+        }
+      }
+
+      // Ink smudges
+      const smudges = [];
+      if (wear > 0.4) {
+        const numSmudges = Math.floor((wear - 0.4) * 8);
+        for (let i = 0; i < numSmudges; i++) {
+          const x = rand(i * 9 + 500) * 240 + 10;
+          const y = rand(i * 9 + 501) * 130 + 10;
+          const rx = rand(i * 9 + 502) * 12 * wear + 4;
+          const ry = rand(i * 9 + 503) * 8 * wear + 3;
+          const opacity = rand(i * 9 + 504) * 0.06 * wear + 0.01;
+          const rot = rand(i * 9 + 505) * 180;
+          smudges.push(`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="rgba(0,0,0,${opacity.toFixed(2)})" transform="rotate(${rot.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`);
+        }
+      }
+
+      // Fingerprint smudges (cluster of small marks)
+      const fingerprints = [];
+      if (wear > 0.7) {
+        const numPrints = Math.floor((wear - 0.7) * 4);
+        for (let i = 0; i < numPrints; i++) {
+          const cx = rand(i * 10 + 600) * 200 + 30;
+          const cy = rand(i * 10 + 601) * 100 + 25;
+          for (let j = 0; j < 8; j++) {
+            const ox = (rand(i * 10 + j * 3 + 602) - 0.5) * 20;
+            const oy = (rand(i * 10 + j * 3 + 603) - 0.5) * 25;
+            const r = rand(i * 10 + j * 3 + 604) * 3 + 1;
+            const opacity = rand(i * 10 + j * 3 + 605) * 0.04 + 0.01;
+            fingerprints.push(`<ellipse cx="${(cx + ox).toFixed(1)}" cy="${(cy + oy).toFixed(1)}" rx="${r.toFixed(1)}" ry="${(r * 1.5).toFixed(1)}" fill="rgba(60,40,20,${opacity.toFixed(2)})"/>`);
+          }
+        }
+      }
+
+      // Tape residue marks
+      const tapeMarks = [];
+      if (wear > 0.8) {
+        const numTape = Math.floor((wear - 0.8) * 3);
+        for (let i = 0; i < numTape; i++) {
+          const x = rand(i * 11 + 700) * 180 + 20;
+          const y = rand(i * 11 + 701) < 0.5 ? rand(i * 11 + 702) * 30 : 120 + rand(i * 11 + 702) * 30;
+          const w = rand(i * 11 + 703) * 40 + 20;
+          const h = rand(i * 11 + 704) * 15 + 8;
+          const opacity = rand(i * 11 + 705) * 0.1 + 0.05;
+          tapeMarks.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="rgba(200,180,120,${opacity.toFixed(2)})" rx="2"/>`);
         }
       }
 
@@ -664,10 +855,24 @@
       <!-- Edge wear -->
       ${edgeWear.join('\n      ')}
       <!-- Dust specks -->
-      ${dustSpecks.join('\n      ')}` : '';
+      ${dustSpecks.join('\n      ')}
+      <!-- Fold creases -->
+      ${creases.join('\n      ')}
+      <!-- Water/coffee stains -->
+      ${stains.join('\n      ')}
+      <!-- Ink smudges -->
+      ${smudges.join('\n      ')}
+      <!-- Fingerprints -->
+      ${fingerprints.join('\n      ')}
+      <!-- Tape residue -->
+      ${tapeMarks.join('\n      ')}` : '';
+
+      // Generate sticker backing if enabled
+      const stickerMarkup = showStamp ? generateStickerBacking(colors) : '';
 
       return `<svg width="280" height="170" viewBox="-10 -10 280 170" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g transform="rotate(${rotation.toFixed(2)} 130 75)">
+    ${stickerMarkup}
       <!-- Top stripes -->
       ${generateStripes(colors, true)}
       <!-- Bottom stripes -->
@@ -744,6 +949,21 @@
         updatePreview();
       });
 
+      // Sticker checkbox
+      document.getElementById('sticker-checkbox').addEventListener('change', (e) => {
+        showStamp = e.target.checked;
+        updatePreview();
+      });
+
+      // About modal
+      const aboutOverlay = document.getElementById('about-overlay');
+      document.getElementById('about-btn').addEventListener('click', () => {
+        aboutOverlay.classList.add('visible');
+      });
+      aboutOverlay.addEventListener('click', () => {
+        aboutOverlay.classList.remove('visible');
+      });
+
       // Example buttons
       document.querySelectorAll('.example-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -777,5 +997,11 @@
       });
     });
   </script>
+
+  <div class="about-overlay" id="about-overlay">
+    <div class="about-modal">
+      A little tool to generate charming postmarks for my travel blog. Each dispatch marks where a post is from.
+    </div>
+  </div>
 </body>
 </html>
