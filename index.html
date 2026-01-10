@@ -322,7 +322,8 @@
       border: none;
     }
 
-    #wear-value {
+    #wear-value,
+    #rotation-value {
       font-style: italic;
     }
 
@@ -444,6 +445,10 @@
         <div class="field wear-field">
           <label>Wear & Tear: <span id="wear-value">Medium</span></label>
           <input type="range" id="wear-slider" min="0" max="100" value="50">
+        </div>
+        <div class="field wear-field">
+          <label>Rotation: <span id="rotation-value">0°</span></label>
+          <input type="range" id="rotation-slider" min="-30" max="30" value="0">
         </div>
         <label class="checkbox-field">
           <input type="checkbox" id="sticker-checkbox">
@@ -575,6 +580,7 @@
     let selectedSymbol = 'compass';
     let selectedPalette = colorPalettes[0];
     let wearLevel = 50;
+    let rotationDegrees = 0;
     let showStamp = false;
 
     // Initialize symbol grid
@@ -702,7 +708,9 @@
       // Deterministic random based on city name
       const seed = city.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
       const rand = (n) => ((seed * (n + 1) * 9301 + 49297) % 233280) / 233280;
-      const rotation = wear > 0 ? (rand(0) - 0.5) * 5 * wear : 0;
+
+      // Rotation is independent of wear
+      const rotation = rotationDegrees;
 
       // Generate large fade patches
       const fadePatches = [];
@@ -946,6 +954,20 @@
       wearSlider.addEventListener('input', (e) => {
         wearLevel = parseInt(e.target.value);
         updateWearLabel();
+        updatePreview();
+      });
+
+      // Rotation slider
+      const rotationSlider = document.getElementById('rotation-slider');
+      const rotationValue = document.getElementById('rotation-value');
+
+      function updateRotationLabel() {
+        rotationValue.textContent = rotationDegrees + '°';
+      }
+
+      rotationSlider.addEventListener('input', (e) => {
+        rotationDegrees = parseInt(e.target.value);
+        updateRotationLabel();
         updatePreview();
       });
 
