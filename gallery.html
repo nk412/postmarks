@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postmarks Gallery</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f5f3ef;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .header-links {
+      text-align: center;
+      margin: 0 0 48px;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .header-links a,
+    .header-links button {
+      font-family: Georgia, serif;
+      font-size: 14px;
+      color: #555;
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .header-links a:hover,
+    .header-links button:hover {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+
+    .about-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-overlay.visible {
+      display: flex;
+    }
+
+    .about-modal {
+      background: #fff;
+      padding: 24px 28px;
+      max-width: 340px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 24px;
+      align-items: center;
+    }
+
+    .gallery-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .gallery-item img,
+    .gallery-item object {
+      max-width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .gallery-item object {
+      width: 100%;
+      min-height: 240px;
+      transform: scale(1.4);
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .gallery-item {
+        padding: 12px;
+      }
+
+      .gallery-item object {
+        transform: scale(1.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>POSTMARKS</h1>
+    <p class="header-links">
+      <a href="index.html">Make your own</a>
+      <button class="about-btn" id="about-btn">About</button>
+    </p>
+
+    <div class="gallery">
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Tokyo&country=Japan&native=%E6%9D%B1%E4%BA%AC&symbol=sun&palette=0&wear=30&rotation=-3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=London&country=United%20Kingdom&symbol=globe&palette=6&wear=25&style=envelope&rotation=2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Vienna&country=Austria&native=Wien&palette=2&wear=40&style=label&rotation=-1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Paris&country=France&symbol=heart&palette=5&wear=45&rotation=4&sticker=1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Barcelona&country=Spain&native=Espa%C3%B1a&palette=9&wear=55&style=label&rotation=2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Sydney&country=Australia&symbol=sun&palette=8&wear=30&style=envelope&rotation=-2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Marrakech&country=Morocco&native=%D9%85%D8%B1%D8%A7%D9%83%D8%B4&symbol=star&palette=16&wear=60&rotation=-5" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Reykjavik&country=Iceland&native=%C3%8Dsland&symbol=mountain&palette=20&wear=55&rotation=3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Santorini&country=Greece&native=%CE%A3%CE%B1%CE%BD%CF%84%CE%BF%CF%81%CE%AF%CE%BD%CE%B7&palette=8&wear=45&style=label&rotation=-2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=New%20York&country=USA&symbol=star&palette=11&wear=20&rotation=-4" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Rome&country=Italy&native=Roma&symbol=compass&palette=9&wear=40&style=envelope&rotation=3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Kyoto&country=Japan&native=%E4%BA%AC%E9%83%BD&symbol=leaf&palette=4&wear=40&rotation=2&sticker=1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Amsterdam&country=Netherlands&palette=21&wear=30&style=label&rotation=1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Buenos%20Aires&country=Argentina&symbol=bird&palette=12&wear=50&style=envelope&rotation=-3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Lisbon&country=Portugal&native=Lisboa&symbol=wave&palette=8&wear=35&rotation=-2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Istanbul&country=Turkey&native=T%C3%BCrkiye&palette=22&wear=65&style=label&rotation=3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Stockholm&country=Sweden&native=Sverige&symbol=anchor&palette=3&wear=25&rotation=5&sticker=1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Prague&country=Czech%20Republic&native=Praha&symbol=camera&palette=23&wear=45&style=envelope&rotation=-4" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Mumbai&country=India&native=%E0%A4%AE%E0%A5%81%E0%A4%82%E0%A4%AC%E0%A4%88&symbol=sun&palette=14&wear=30&rotation=2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Osaka&country=Japan&native=%E5%A4%A7%E9%98%AA&palette=15&wear=35&style=label&rotation=-3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Cape%20Town&country=South%20Africa&symbol=mountain&palette=17&wear=35&style=envelope&rotation=2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Havana&country=Cuba&symbol=coffee&palette=7&wear=70&rotation=-6" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Dubai&country=UAE&native=%D8%AF%D8%A8%D9%8A&symbol=star&palette=19&wear=25&rotation=3&sticker=1" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Copenhagen&country=Denmark&native=K%C3%B8benhavn&symbol=anchor&palette=1&wear=20&style=envelope&rotation=-2" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Vancouver&country=Canada&symbol=leaf&palette=10&wear=35&rotation=4" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Edinburgh&country=Scotland&symbol=mountain&palette=18&wear=40&rotation=-3" type="image/svg+xml"></object>
+      </div>
+      <div class="gallery-item">
+        <object data="https://postmarks.nk412.workers.dev?city=Florence&country=Italy&native=Firenze&symbol=camera&palette=13&wear=45&style=label&rotation=2" type="image/svg+xml"></object>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-overlay" id="about-overlay">
+    <div class="about-modal">
+      <img src="postmarks.svg" alt="Postmarks" style="width: 100%; margin-bottom: 16px;">
+      Inspired by a time of slow travel, field reports, passport stamps and airmail labels. Create vintage-style SVG markers for your travel posts.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('about-btn').addEventListener('click', () => {
+      document.getElementById('about-overlay').classList.add('visible');
+    });
+    document.getElementById('about-overlay').addEventListener('click', () => {
+      document.getElementById('about-overlay').classList.remove('visible');
+    });
+  </script>
+</body>
+</html>
