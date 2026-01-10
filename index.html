@@ -39,8 +39,85 @@
     }
 
     @media (max-width: 700px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 24px;
+      }
+
       .generator {
         grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .preview-section {
+        order: -1;
+      }
+
+      .preview-box {
+        padding: 20px;
+        min-height: auto;
+        overflow-x: auto;
+      }
+
+      #preview-svg {
+        transform: scale(0.85);
+        transform-origin: center;
+      }
+
+      .symbol-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .symbol-option svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .color-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .color-option {
+        height: 32px;
+      }
+
+      .color-label {
+        font-size: 9px;
+      }
+
+      .examples {
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .example-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .examples-label {
+        width: 100%;
+        margin-bottom: 4px;
+      }
+
+      .download-btn {
+        padding: 14px 24px;
+        font-size: 13px;
+      }
+
+      .field {
+        gap: 6px;
+      }
+
+      input[type="text"] {
+        font-size: 16px;
+        padding: 10px 12px;
       }
     }
 
@@ -121,6 +198,9 @@
       display: flex;
       overflow: hidden;
       transition: border-color 0.2s;
+      padding: 0;
+      background: none;
+      width: 100%;
     }
 
     .color-option:hover {
@@ -245,6 +325,10 @@
     #wear-value {
       font-style: italic;
     }
+
+    .wear-field {
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -255,10 +339,10 @@
       <span class="examples-label">Examples:</span>
       <button class="example-btn" data-city="Tokyo" data-country="Japan" data-native="東京" data-symbol="sun" data-palette="0">Tokyo</button>
       <button class="example-btn" data-city="Stockholm" data-country="Sweden" data-native="Sverige" data-symbol="anchor" data-palette="3">Stockholm</button>
-      <button class="example-btn" data-city="Tangier" data-country="Morocco" data-native="طنجة" data-symbol="star" data-palette="7">Tangier</button>
-      <button class="example-btn" data-city="Yakutsk" data-country="Russia" data-native="Якутск" data-symbol="moon" data-palette="6">Yakutsk</button>
-      <button class="example-btn" data-city="London" data-country="United Kingdom" data-native="" data-symbol="globe" data-palette="5">London</button>
-      <button class="example-btn" data-city="Portland" data-country="Oregon, USA" data-native="" data-symbol="mountain" data-palette="4">Portland</button>
+      <button class="example-btn" data-city="Reykjavik" data-country="Iceland" data-native="Ísland" data-symbol="moon" data-palette="6">Reykjavik</button>
+      <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="7">Marrakech</button>
+      <button class="example-btn" data-city="Ushuaia" data-country="Argentina" data-native="Fin del Mundo" data-symbol="compass" data-palette="8">Ushuaia</button>
+      <button class="example-btn" data-city="Kathmandu" data-country="Nepal" data-native="काठमाडौं" data-symbol="mountain" data-palette="2">Kathmandu</button>
     </div>
 
     <div class="generator">
@@ -287,16 +371,15 @@
           <label>Color Palette</label>
           <div class="color-grid" id="color-grid"></div>
         </div>
-
-        <div class="field">
-          <label>Wear & Tear: <span id="wear-value">Medium</span></label>
-          <input type="range" id="wear-slider" min="0" max="100" value="50">
-        </div>
       </div>
 
       <div class="preview-section">
         <div class="preview-box">
           <div id="preview-svg"></div>
+        </div>
+        <div class="field wear-field">
+          <label>Wear & Tear: <span id="wear-value">Medium</span></label>
+          <input type="range" id="wear-slider" min="0" max="100" value="50">
         </div>
         <button class="download-btn" id="download-btn">Download SVG</button>
       </div>
