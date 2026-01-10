@@ -593,48 +593,94 @@ function generateLabelSvg(options) {
 function generateLabelWearEffects(wearLevel, rand) {
   const effects = [];
 
-  // Paper stains/foxing
-  if (wearLevel > 0.15) {
-    const numSpots = Math.floor(wearLevel * 12) + 2;
+  // Paper stains/foxing - more intense
+  if (wearLevel > 0.1) {
+    const numSpots = Math.floor(wearLevel * 25) + 5;
     for (let i = 0; i < numSpots; i++) {
       const x = rand(i * 4 + 200) * 280 + 10;
       const y = rand(i * 4 + 201) * 70 + 10;
-      const size = rand(i * 4 + 202) * 3 * wearLevel + 0.5;
-      const opacity = rand(i * 4 + 203) * 0.1 * wearLevel + 0.02;
-      const r = Math.floor(130 + rand(i * 4 + 204) * 40);
-      const g = Math.floor(100 + rand(i * 4 + 205) * 30);
-      const b = Math.floor(60 + rand(i * 4 + 206) * 20);
+      const size = rand(i * 4 + 202) * 5 * wearLevel + 1;
+      const opacity = rand(i * 4 + 203) * 0.2 * wearLevel + 0.05;
+      const r = Math.floor(120 + rand(i * 4 + 204) * 50);
+      const g = Math.floor(90 + rand(i * 4 + 205) * 40);
+      const b = Math.floor(50 + rand(i * 4 + 206) * 30);
       effects.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(1)}" fill="rgba(${r},${g},${b},${opacity.toFixed(3)})"/>`);
     }
   }
 
-  // Fade patches
-  if (wearLevel > 0.2) {
-    const numPatches = Math.floor(wearLevel * 4) + 1;
+  // Fade patches - larger and more visible
+  if (wearLevel > 0.15) {
+    const numPatches = Math.floor(wearLevel * 8) + 2;
     for (let i = 0; i < numPatches; i++) {
       const x = rand(i * 3 + 300) * 260 + 20;
       const y = rand(i * 3 + 301) * 60 + 15;
-      const rx = rand(i * 3 + 302) * 20 * wearLevel + 8;
+      const rx = rand(i * 3 + 302) * 30 * wearLevel + 12;
       const ry = rx * (0.4 + rand(i * 3 + 303) * 0.3);
-      const opacity = (rand(i * 7 + 304) * 0.1 + 0.03) * wearLevel;
+      const opacity = (rand(i * 7 + 304) * 0.2 + 0.08) * wearLevel;
       effects.push(`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="rgba(245,240,225,${opacity.toFixed(3)})" filter="url(#blur-subtle)"/>`);
     }
   }
 
-  // Edge wear/tears
-  if (wearLevel > 0.4) {
-    const numTears = Math.floor(wearLevel * 6) + 1;
+  // Edge wear/tears - more aggressive
+  if (wearLevel > 0.25) {
+    const numTears = Math.floor(wearLevel * 12) + 3;
     for (let i = 0; i < numTears; i++) {
       const onEdge = Math.floor(rand(i * 5 + 400) * 4);
       let x, y;
-      if (onEdge === 0) { x = rand(i * 5 + 401) * 280 + 10; y = rand(i * 5 + 402) * 6; }
-      else if (onEdge === 1) { x = rand(i * 5 + 401) * 280 + 10; y = 84 + rand(i * 5 + 402) * 6; }
-      else if (onEdge === 2) { x = rand(i * 5 + 402) * 6; y = rand(i * 5 + 401) * 70 + 10; }
-      else { x = 294 + rand(i * 5 + 402) * 6; y = rand(i * 5 + 401) * 70 + 10; }
+      if (onEdge === 0) { x = rand(i * 5 + 401) * 280 + 10; y = rand(i * 5 + 402) * 8; }
+      else if (onEdge === 1) { x = rand(i * 5 + 401) * 280 + 10; y = 82 + rand(i * 5 + 402) * 8; }
+      else if (onEdge === 2) { x = rand(i * 5 + 402) * 8; y = rand(i * 5 + 401) * 70 + 10; }
+      else { x = 292 + rand(i * 5 + 402) * 8; y = rand(i * 5 + 401) * 70 + 10; }
 
-      const size = rand(i * 5 + 403) * 4 * wearLevel + 1;
-      const opacity = rand(i * 5 + 404) * 0.3 + 0.2;
+      const size = rand(i * 5 + 403) * 6 * wearLevel + 2;
+      const opacity = rand(i * 5 + 404) * 0.4 + 0.35;
       effects.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(1)}" fill="rgba(245,240,225,${opacity.toFixed(3)})"/>`);
+    }
+  }
+
+  // Scratches
+  if (wearLevel > 0.2) {
+    const numScratches = Math.floor(wearLevel * 6) + 2;
+    for (let i = 0; i < numScratches; i++) {
+      const x1 = rand(i * 5 + 500) * 260 + 20;
+      const y1 = rand(i * 5 + 501) * 70 + 10;
+      const length = rand(i * 5 + 502) * 40 * wearLevel + 15;
+      const angle = rand(i * 5 + 503) * 60 - 30;
+      const x2 = x1 + length * Math.cos(angle * Math.PI / 180);
+      const y2 = y1 + length * Math.sin(angle * Math.PI / 180);
+      const opacity = rand(i * 5 + 504) * 0.15 * wearLevel + 0.05;
+      const strokeWidth = rand(i * 9 + 505) * 2 * wearLevel + 0.5;
+      effects.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(245,240,225,${opacity.toFixed(3)})" stroke-width="${strokeWidth.toFixed(2)}" stroke-linecap="round"/>`);
+    }
+  }
+
+  // Coffee/water stains
+  if (wearLevel > 0.4) {
+    const numStains = Math.floor((wearLevel - 0.4) * 5) + 1;
+    for (let i = 0; i < numStains; i++) {
+      const cx = rand(i * 8 + 600) * 240 + 30;
+      const cy = rand(i * 8 + 601) * 50 + 20;
+      const radius = rand(i * 8 + 602) * 18 * wearLevel + 10;
+      const opacity = rand(i * 8 + 603) * 0.12 * wearLevel + 0.04;
+      const r = Math.floor(140 + rand(i * 8 + 604) * 50);
+      const g = Math.floor(100 + rand(i * 8 + 605) * 40);
+      const b = Math.floor(60 + rand(i * 8 + 606) * 30);
+      // Outer ring
+      effects.push(`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius.toFixed(1)}" fill="none" stroke="rgba(${r},${g},${b},${opacity.toFixed(3)})" stroke-width="${(radius * 0.3).toFixed(1)}" filter="url(#blur-subtle)"/>`);
+    }
+  }
+
+  // Ink smudges on text
+  if (wearLevel > 0.5) {
+    const numSmudges = Math.floor((wearLevel - 0.5) * 6) + 1;
+    for (let i = 0; i < numSmudges; i++) {
+      const x = rand(i * 6 + 700) * 200 + 50;
+      const y = rand(i * 6 + 701) * 30 + 50; // Focus on text area
+      const rx = rand(i * 6 + 702) * 20 * wearLevel + 8;
+      const ry = rx * (0.3 + rand(i * 6 + 703) * 0.2);
+      const opacity = rand(i * 6 + 704) * 0.1 * wearLevel + 0.03;
+      const rot = rand(i * 6 + 705) * 30 - 15;
+      effects.push(`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="rgba(60,50,40,${opacity.toFixed(3)})" transform="rotate(${rot.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" filter="url(#blur-subtle)"/>`);
     }
   }
 
@@ -794,74 +840,74 @@ function generateEnvelopeSvg(options) {
 function generateEnvelopeWearEffects(wearLevel, rand) {
   const effects = [];
 
-  // Ink fade patches
+  // Ink fade patches - more intense
   if (wearLevel > 0.1) {
-    const numPatches = Math.floor(wearLevel * 5) + 1;
+    const numPatches = Math.floor(wearLevel * 8) + 2;
     for (let i = 0; i < numPatches; i++) {
       const x = rand(i * 3) * 240 + 40;
       const y = rand(i * 3 + 1) * 120 + 30;
-      const radius = rand(i * 3 + 2) * 18 * wearLevel + 6;
-      const opacity = (rand(i * 7) * 0.15 + 0.06) * wearLevel;
+      const radius = rand(i * 3 + 2) * 25 * wearLevel + 10;
+      const opacity = (rand(i * 7) * 0.25 + 0.1) * wearLevel;
       const path = generateBlobPath(x, y, radius, 0.6, rand, i * 20);
       effects.push(`<path d="${path}" fill="rgba(255,254,248,${opacity.toFixed(3)})" filter="url(#blur-subtle)"/>`);
     }
   }
 
-  // Paper foxing spots
-  if (wearLevel > 0.2) {
-    const numFoxing = Math.floor(wearLevel * 20) + 3;
+  // Paper foxing spots - more numerous and visible
+  if (wearLevel > 0.15) {
+    const numFoxing = Math.floor(wearLevel * 35) + 8;
     for (let i = 0; i < numFoxing; i++) {
       const x = rand(i * 4 + 800) * 260 + 30;
       const y = rand(i * 4 + 801) * 140 + 20;
-      const size = rand(i * 4 + 802) * 2.5 * wearLevel + 0.4;
-      const opacity = rand(i * 4 + 803) * 0.12 * wearLevel + 0.02;
-      const r = Math.floor(120 + rand(i * 4 + 804) * 50);
-      const g = Math.floor(85 + rand(i * 4 + 805) * 35);
-      const b = Math.floor(45 + rand(i * 4 + 806) * 25);
+      const size = rand(i * 4 + 802) * 4 * wearLevel + 1;
+      const opacity = rand(i * 4 + 803) * 0.2 * wearLevel + 0.05;
+      const r = Math.floor(110 + rand(i * 4 + 804) * 60);
+      const g = Math.floor(75 + rand(i * 4 + 805) * 45);
+      const b = Math.floor(35 + rand(i * 4 + 806) * 35);
       const path = generateBlobPath(x, y, size, 0.4, rand, i * 30 + 800);
       effects.push(`<path d="${path}" fill="rgba(${r},${g},${b},${opacity.toFixed(3)})"/>`);
     }
   }
 
-  // Organic scratches
-  if (wearLevel > 0.15) {
-    const numScratches = Math.floor(wearLevel * 4) + 1;
+  // Organic scratches - more and deeper
+  if (wearLevel > 0.1) {
+    const numScratches = Math.floor(wearLevel * 8) + 2;
     for (let i = 0; i < numScratches; i++) {
       const x1 = rand(i * 5 + 50) * 240 + 40;
       const y1 = rand(i * 5 + 51) * 130 + 25;
-      const length = rand(i * 5 + 52) * 30 * wearLevel + 10;
+      const length = rand(i * 5 + 52) * 45 * wearLevel + 15;
       const angle = rand(i * 5 + 53) * 50 - 25;
       const x2 = x1 + length * Math.cos(angle * Math.PI / 180);
       const y2 = y1 + length * Math.sin(angle * Math.PI / 180);
-      const opacity = rand(i * 5 + 54) * 0.1 * wearLevel + 0.03;
-      const strokeWidth = rand(i * 9) * 1.5 * wearLevel + 0.4;
-      const waviness = rand(i * 5 + 55) * 3 + 1.5;
+      const opacity = rand(i * 5 + 54) * 0.18 * wearLevel + 0.06;
+      const strokeWidth = rand(i * 9) * 2.5 * wearLevel + 0.6;
+      const waviness = rand(i * 5 + 55) * 4 + 2;
       const path = generateOrganicLine(x1, y1, x2, y2, waviness, rand, i * 40 + 50);
       effects.push(`<path d="${path}" stroke="rgba(255,254,248,${opacity.toFixed(3)})" stroke-width="${strokeWidth.toFixed(2)}" fill="none" stroke-linecap="round"/>`);
     }
   }
 
-  // Edge wear
-  if (wearLevel > 0.3) {
-    const numEdgeWear = Math.floor(wearLevel * 8) + 2;
+  // Edge wear - more aggressive
+  if (wearLevel > 0.2) {
+    const numEdgeWear = Math.floor(wearLevel * 15) + 4;
     for (let i = 0; i < numEdgeWear; i++) {
       const onEdge = Math.floor(rand(i * 6 + 100) * 4);
       let x, y;
-      if (onEdge === 0) { x = rand(i * 6 + 101) * 260 + 30; y = 10 + rand(i * 6 + 102) * 6; }
-      else if (onEdge === 1) { x = rand(i * 6 + 101) * 260 + 30; y = 164 + rand(i * 6 + 102) * 6; }
-      else if (onEdge === 2) { x = 20 + rand(i * 6 + 102) * 6; y = rand(i * 6 + 101) * 140 + 20; }
-      else { x = 294 + rand(i * 6 + 102) * 6; y = rand(i * 6 + 101) * 140 + 20; }
+      if (onEdge === 0) { x = rand(i * 6 + 101) * 260 + 30; y = 10 + rand(i * 6 + 102) * 8; }
+      else if (onEdge === 1) { x = rand(i * 6 + 101) * 260 + 30; y = 162 + rand(i * 6 + 102) * 8; }
+      else if (onEdge === 2) { x = 20 + rand(i * 6 + 102) * 8; y = rand(i * 6 + 101) * 140 + 20; }
+      else { x = 292 + rand(i * 6 + 102) * 8; y = rand(i * 6 + 101) * 140 + 20; }
 
-      const size = rand(i * 6 + 103) * 5 * wearLevel + 1.5;
-      const opacity = rand(i * 6 + 105) * 0.4 + 0.3;
+      const size = rand(i * 6 + 103) * 8 * wearLevel + 2;
+      const opacity = rand(i * 6 + 105) * 0.5 + 0.4;
       const path = generateBlobPath(x, y, size, 0.7, rand, i * 25 + 100);
       effects.push(`<path d="${path}" fill="rgba(255,254,248,${opacity.toFixed(3)})"/>`);
     }
   }
 
-  // Paper creases
-  if (wearLevel > 0.5) {
-    const numCreases = Math.floor((wearLevel - 0.5) * 3) + 1;
+  // Paper creases - more prominent
+  if (wearLevel > 0.35) {
+    const numCreases = Math.floor((wearLevel - 0.35) * 5) + 1;
     for (let i = 0; i < numCreases; i++) {
       const vertical = rand(i * 7 + 300) > 0.5;
       let x1, y1, x2, y2;
@@ -876,15 +922,87 @@ function generateEnvelopeWearEffects(wearLevel, rand) {
         x2 = 280 + rand(i * 7 + 304) * 15;
         y2 = y1 + (rand(i * 7 + 303) - 0.5) * 12;
       }
-      const shadowOpacity = rand(i * 7 + 305) * 0.06 * wearLevel + 0.015;
-      const highlightOpacity = shadowOpacity * 0.5;
+      const shadowOpacity = rand(i * 7 + 305) * 0.12 * wearLevel + 0.04;
+      const highlightOpacity = shadowOpacity * 0.6;
       const waviness = rand(i * 7 + 306) * 5 + 2;
       const path = generateOrganicLine(x1, y1, x2, y2, waviness, rand, i * 50 + 300);
 
-      effects.push(`<path d="${path}" stroke="rgba(0,0,0,${shadowOpacity.toFixed(3)})" stroke-width="1.2" fill="none"/>`);
-      const offset = vertical ? 1.2 : 0;
-      const offsetY = vertical ? 0 : 1.2;
-      effects.push(`<path d="${path}" stroke="rgba(255,255,255,${highlightOpacity.toFixed(3)})" stroke-width="0.6" fill="none" transform="translate(${offset} ${offsetY})"/>`);
+      effects.push(`<path d="${path}" stroke="rgba(0,0,0,${shadowOpacity.toFixed(3)})" stroke-width="1.5" fill="none"/>`);
+      const offset = vertical ? 1.5 : 0;
+      const offsetY = vertical ? 0 : 1.5;
+      effects.push(`<path d="${path}" stroke="rgba(255,255,255,${highlightOpacity.toFixed(3)})" stroke-width="0.8" fill="none" transform="translate(${offset} ${offsetY})"/>`);
+    }
+  }
+
+  // Coffee/water stains - new effect
+  if (wearLevel > 0.45) {
+    const numStains = Math.floor((wearLevel - 0.45) * 4) + 1;
+    for (let i = 0; i < numStains; i++) {
+      const cx = rand(i * 8 + 400) * 220 + 50;
+      const cy = rand(i * 8 + 401) * 120 + 30;
+      const baseRadius = rand(i * 8 + 402) * 25 * wearLevel + 15;
+      const opacity = rand(i * 8 + 403) * 0.1 * wearLevel + 0.04;
+      const r = Math.floor(140 + rand(i * 8 + 405) * 50);
+      const g = Math.floor(100 + rand(i * 8 + 406) * 40);
+      const b = Math.floor(60 + rand(i * 8 + 407) * 30);
+
+      const outerPath = generateBlobPath(cx, cy, baseRadius, 0.4, rand, i * 55 + 400);
+      const innerRadius = baseRadius * (0.65 + rand(i * 8 + 404) * 0.15);
+      const innerPath = generateBlobPath(cx, cy, innerRadius, 0.35, rand, i * 55 + 450);
+
+      effects.push(`<path d="${outerPath}" fill="rgba(${r},${g},${b},${opacity.toFixed(3)})" filter="url(#blur-subtle)"/>`);
+      effects.push(`<path d="${innerPath}" fill="rgba(255,254,248,${(opacity * 0.8).toFixed(3)})"/>`);
+    }
+  }
+
+  // Fingerprint smudges - new effect
+  if (wearLevel > 0.55) {
+    const numPrints = Math.floor((wearLevel - 0.55) * 4) + 1;
+    for (let i = 0; i < numPrints; i++) {
+      const cx = rand(i * 10 + 600) * 200 + 60;
+      const cy = rand(i * 10 + 601) * 100 + 40;
+      const angle = rand(i * 10 + 602) * 360;
+      const scale = 0.9 + rand(i * 10 + 603) * 0.5;
+      const opacity = rand(i * 10 + 604) * 0.06 + 0.025;
+
+      let ridges = '';
+      const numRidges = 5 + Math.floor(rand(i * 10 + 605) * 3);
+      for (let j = 0; j < numRidges; j++) {
+        const ridgeRadius = 3 + j * 2.5;
+        const startAngle = rand(i * 10 + j * 5 + 610) * 0.3;
+        const endAngle = Math.PI * (1.3 + rand(i * 10 + j * 5 + 611) * 0.6);
+
+        let arcPath = '';
+        const segments = 8;
+        for (let k = 0; k <= segments; k++) {
+          const t = startAngle + (endAngle - startAngle) * (k / segments);
+          const wave = Math.sin(t * 8 + j) * 1.5 * (rand(i * 10 + j * 5 + k + 620) * 0.5 + 0.5);
+          const r = ridgeRadius + wave;
+          const x = Math.cos(t) * r * 1.3;
+          const y = Math.sin(t) * r;
+          if (k === 0) arcPath = `M ${x.toFixed(1)} ${y.toFixed(1)}`;
+          else arcPath += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+        }
+        ridges += `<path d="${arcPath}" stroke="rgba(80,60,40,${opacity.toFixed(3)})" stroke-width="${(0.5 + rand(i * 10 + j * 5 + 615) * 0.4).toFixed(2)}" fill="none"/>`;
+      }
+
+      effects.push(`<g transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${angle.toFixed(0)}) scale(${scale.toFixed(2)})" filter="url(#blur-subtle)">${ridges}</g>`);
+    }
+  }
+
+  // Tape residue marks - new effect
+  if (wearLevel > 0.7) {
+    const numTape = Math.floor((wearLevel - 0.7) * 4) + 1;
+    for (let i = 0; i < numTape; i++) {
+      const x = rand(i * 11 + 700) * 180 + 50;
+      const y = rand(i * 11 + 701) < 0.5 ? rand(i * 11 + 702) * 20 + 15 : 145 + rand(i * 11 + 702) * 20;
+      const w = rand(i * 11 + 703) * 40 + 30;
+      const h = rand(i * 11 + 704) * 10 + 5;
+      const opacity = rand(i * 11 + 705) * 0.1 + 0.05;
+      const angle = (rand(i * 11 + 706) - 0.5) * 10;
+
+      const path = generateBlobPath(x + w / 2, y + h / 2, (w + h) / 4, 0.3, rand, i * 60 + 700);
+      effects.push(`<path d="${path}" fill="rgba(180,160,100,${opacity.toFixed(3)})" transform="rotate(${angle.toFixed(1)} ${(x + w / 2).toFixed(1)} ${(y + h / 2).toFixed(1)}) scale(${(w / ((w + h) / 4)).toFixed(2)} ${(h / ((w + h) / 4)).toFixed(2)})" filter="url(#blur-subtle)"/>`);
     }
   }
 
