@@ -586,12 +586,12 @@
 
     <div class="examples">
       <span class="examples-label">Examples:</span>
-      <button class="example-btn" data-city="Tokyo" data-country="Japan" data-native="東京" data-symbol="sun" data-palette="0">Tokyo</button>
-      <button class="example-btn" data-city="Stockholm" data-country="Sweden" data-native="Sverige" data-symbol="anchor" data-palette="3">Stockholm</button>
-      <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="16">Marrakech</button>
-      <button class="example-btn" data-city="Lisbon" data-country="Portugal" data-native="Lisboa" data-symbol="wave" data-palette="12">Lisbon</button>
-      <button class="example-btn" data-city="Santorini" data-country="Greece" data-native="Σαντορίνη" data-symbol="sun" data-palette="8">Santorini</button>
-      <button class="example-btn" data-city="Amman" data-country="Jordan" data-native="عمّان" data-symbol="star" data-palette="7">Amman</button>
+      <button class="example-btn" data-city="Tokyo" data-country="Japan" data-native="東京" data-symbol="sun" data-palette="0" data-style="postmark">Tokyo</button>
+      <button class="example-btn" data-city="Stockholm" data-country="Sweden" data-native="Sverige" data-symbol="anchor" data-palette="3" data-style="envelope">Stockholm</button>
+      <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="16" data-style="label">Marrakech</button>
+      <button class="example-btn" data-city="Lisbon" data-country="Portugal" data-native="Lisboa" data-symbol="wave" data-palette="12" data-style="postmark" data-sticker="1">Lisbon</button>
+      <button class="example-btn" data-city="Santorini" data-country="Greece" data-native="Σαντορίνη" data-symbol="sun" data-palette="8" data-style="envelope">Santorini</button>
+      <button class="example-btn" data-city="Amman" data-country="Jordan" data-native="عمّان" data-symbol="star" data-palette="7" data-style="label">Amman</button>
     </div>
 
     <div class="generator">
@@ -925,6 +925,23 @@
             paletteBtns[paletteIdx].classList.add('selected');
             selectedPalette = colorPalettes[paletteIdx];
           }
+
+          // Select style
+          const style = btn.dataset.style || 'postmark';
+          document.querySelectorAll('.style-toggle-btn').forEach(b => b.classList.remove('selected'));
+          const styleBtn = document.querySelector(`.style-toggle-btn[data-style="${style}"]`);
+          if (styleBtn) {
+            styleBtn.classList.add('selected');
+            selectedStyle = style;
+            // Update visibility of sticker and symbol options
+            stickerField.style.display = style === 'postmark' ? 'flex' : 'none';
+            symbolField.style.display = style === 'label' ? 'none' : 'block';
+          }
+
+          // Set sticker
+          const hasSticker = btn.dataset.sticker === '1';
+          document.getElementById('sticker-checkbox').checked = hasSticker;
+          showStamp = hasSticker;
 
           updatePreview();
         });
