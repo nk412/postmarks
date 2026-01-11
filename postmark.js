@@ -782,12 +782,22 @@ function generateEnvelopeSvg(options) {
   const wearMarkup = wearEffects.length > 0 ? wearEffects.join('\n      ') : '';
   const wearFilters = wearLevel > 0 ? generateWearFilters() : '';
 
-  // Calculate padding for rotation
+  // Calculate padding for rotation using trigonometric calculations
+  // This ensures smooth size transitions as rotation changes
+  const baseWidth = 320;
+  const baseHeight = 180;
   const hasRotation = Math.abs(rotation) > 0.01;
+  const rotationRad = Math.abs(rotation) * Math.PI / 180;
+  // When rotated, the bounding box grows based on sin/cos of rotation angle
+  const rotatedHeight = baseWidth * Math.sin(rotationRad) + baseHeight * Math.cos(rotationRad);
+  const rotatedWidth = baseWidth * Math.cos(rotationRad) + baseHeight * Math.sin(rotationRad);
+  const neededPaddingX = Math.ceil((rotatedWidth - baseWidth) / 2) + 10;
+  const neededPaddingY = Math.ceil((rotatedHeight - baseHeight) / 2) + 10;
+
   const paddingX = typeof viewBoxPadding === 'object' ? viewBoxPadding.x :
-                   (viewBoxPadding > 50 && hasRotation ? 40 : (hasRotation ? viewBoxPadding : 10));
+                   (hasRotation ? neededPaddingX : 10);
   const paddingY = typeof viewBoxPadding === 'object' ? viewBoxPadding.y :
-                   (viewBoxPadding > 50 && hasRotation ? 70 : (hasRotation ? viewBoxPadding : 10));
+                   (hasRotation ? neededPaddingY : 10);
 
   const vbX = -paddingX;
   const vbY = -paddingY;
@@ -1059,14 +1069,22 @@ export function generatePostmark(options) {
 
   const stickerMarkup = sticker ? generateStickerBacking(colors) : '';
 
-  // Calculate padding needed for rotation (max 30° rotation needs different x/y padding)
-  // For a 260x150 rect rotated 30° around center: needs ~30 horizontal, ~65 vertical padding
-  // Only use extra padding when there's actual rotation
+  // Calculate padding needed for rotation using trigonometric calculations
+  // This ensures smooth size transitions as rotation changes
+  const baseWidth = 260;
+  const baseHeight = 150;
   const hasRotation = Math.abs(rotation) > 0.01;
+  const rotationRad = Math.abs(rotation) * Math.PI / 180;
+  // When rotated, the bounding box grows based on sin/cos of rotation angle
+  const rotatedHeight = baseWidth * Math.sin(rotationRad) + baseHeight * Math.cos(rotationRad);
+  const rotatedWidth = baseWidth * Math.cos(rotationRad) + baseHeight * Math.sin(rotationRad);
+  const neededPaddingX = Math.ceil((rotatedWidth - baseWidth) / 2) + 10;
+  const neededPaddingY = Math.ceil((rotatedHeight - baseHeight) / 2) + 10;
+
   const paddingX = typeof viewBoxPadding === 'object' ? viewBoxPadding.x :
-                   (viewBoxPadding > 50 && hasRotation ? 30 : (hasRotation ? viewBoxPadding : 10));
+                   (hasRotation ? neededPaddingX : 10);
   const paddingY = typeof viewBoxPadding === 'object' ? viewBoxPadding.y :
-                   (viewBoxPadding > 50 && hasRotation ? 65 : (hasRotation ? viewBoxPadding : 10));
+                   (hasRotation ? neededPaddingY : 10);
 
   const vbX = -paddingX;
   const vbY = -paddingY;
