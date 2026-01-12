@@ -586,7 +586,7 @@
 
     <div class="examples">
       <span class="examples-label">Examples:</span>
-      <button class="example-btn" data-city="Tokyo" data-country="Japan" data-native="東京" data-symbol="sun" data-palette="0" data-style="postmark">Tokyo</button>
+      <button class="example-btn" data-city="Oymyakon" data-country="Russia" data-native="Оймякон" data-symbol="mountain" data-palette="20" data-style="envelope">Oymyakon</button>
       <button class="example-btn" data-city="Stockholm" data-country="Sweden" data-native="Sverige" data-symbol="anchor" data-palette="3" data-style="envelope">Stockholm</button>
       <button class="example-btn" data-city="Marrakech" data-country="Morocco" data-native="مراكش" data-symbol="star" data-palette="16" data-style="label">Marrakech</button>
       <button class="example-btn" data-city="Lisbon" data-country="Portugal" data-native="Lisboa" data-symbol="wave" data-palette="12" data-style="postmark" data-sticker="1">Lisbon</button>
@@ -598,17 +598,17 @@
       <div class="controls">
         <div class="field">
           <label>City Name</label>
-          <input type="text" id="city-input" placeholder="Tokyo" maxlength="20">
+          <input type="text" id="city-input" placeholder="Oymyakon" maxlength="20">
         </div>
 
         <div class="field">
           <label>Country / Region</label>
-          <input type="text" id="country-input" placeholder="Japan" maxlength="30">
+          <input type="text" id="country-input" placeholder="Russia" maxlength="30">
         </div>
 
         <div class="field">
           <label>Native Script (optional)</label>
-          <input type="text" id="native-input" placeholder="東京" maxlength="20">
+          <input type="text" id="native-input" placeholder="Оймякон" maxlength="20">
         </div>
 
         <div class="field">
@@ -624,8 +624,8 @@
 
       <div class="preview-section">
         <div class="style-toggle">
-          <button class="style-toggle-btn selected" data-style="postmark">Sticker</button>
-          <button class="style-toggle-btn" data-style="envelope">Envelope</button>
+          <button class="style-toggle-btn" data-style="postmark">Sticker</button>
+          <button class="style-toggle-btn selected" data-style="envelope">Envelope</button>
           <button class="style-toggle-btn" data-style="label">Label</button>
         </div>
         <div class="preview-box">
@@ -636,8 +636,8 @@
           <input type="range" id="wear-slider" min="0" max="100" value="50">
         </div>
         <div class="field wear-field">
-          <label>Rotation: <span id="rotation-value">0°</span></label>
-          <input type="range" id="rotation-slider" min="-30" max="30" value="0">
+          <label>Rotation: <span id="rotation-value">5°</span></label>
+          <input type="range" id="rotation-slider" min="-30" max="30" value="5">
         </div>
         <label class="checkbox-field">
           <input type="checkbox" id="sticker-checkbox">
@@ -667,17 +667,17 @@
     const WORKER_URL = 'https://postmarks.nk412.workers.dev';
 
     // State
-    let selectedSymbol = 'compass';
-    let selectedPalette = colorPalettes[0];
+    let selectedSymbol = 'mountain';
+    let selectedPalette = colorPalettes[20];
     let wearLevel = 50;
-    let rotationDegrees = 0;
+    let rotationDegrees = 5;
     let showStamp = false;
-    let selectedStyle = 'postmark';
+    let selectedStyle = 'envelope';
 
     // Initialize symbol grid
     function initSymbolGrid() {
       const grid = document.getElementById('symbol-grid');
-      Object.keys(icons).forEach(key => {
+      Object.keys(icons).forEach((key) => {
         const btn = document.createElement('button');
         btn.className = 'symbol-option' + (key === selectedSymbol ? ' selected' : '');
         btn.innerHTML = iconPreviews[key];
@@ -695,11 +695,12 @@
     // Initialize color grid
     function initColorGrid() {
       const grid = document.getElementById('color-grid');
+      const initialPaletteIndex = colorPalettes.findIndex(p => p.name === selectedPalette.name);
       colorPalettes.forEach((palette, idx) => {
         const wrapper = document.createElement('div');
 
         const btn = document.createElement('button');
-        btn.className = 'color-option' + (idx === 0 ? ' selected' : '');
+        btn.className = 'color-option' + (idx === initialPaletteIndex ? ' selected' : '');
         btn.title = palette.name;
         palette.colors.forEach(color => {
           const swatch = document.createElement('div');
@@ -729,9 +730,9 @@
 
     // Generate postmark SVG using shared module
     function generatePostmarkSvg() {
-      const city = document.getElementById('city-input').value || 'London';
-      const country = document.getElementById('country-input').value || 'United Kingdom';
-      const native = document.getElementById('native-input').value;
+      const city = document.getElementById('city-input').value || 'Oymyakon';
+      const country = document.getElementById('country-input').value || 'Russia';
+      const native = document.getElementById('native-input').value || 'Оймякон';
 
       // Find palette index
       const paletteIndex = colorPalettes.findIndex(p => p.name === selectedPalette.name);
@@ -759,9 +760,9 @@
 
     // Generate worker URL with current settings
     function generateWorkerUrl() {
-      const city = document.getElementById('city-input').value || 'London';
-      const country = document.getElementById('country-input').value || 'United Kingdom';
-      const native = document.getElementById('native-input').value;
+      const city = document.getElementById('city-input').value || 'Oymyakon';
+      const country = document.getElementById('country-input').value || 'Russia';
+      const native = document.getElementById('native-input').value || 'Оймякон';
       const paletteIndex = colorPalettes.findIndex(p => p.name === selectedPalette.name);
 
       const params = new URLSearchParams();
